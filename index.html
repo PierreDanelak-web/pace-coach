@@ -45,11 +45,12 @@ function profile(){return JSON.parse(localStorage.getItem(PROFILE_KEY)||'null')}
 function toast(t){let x=document.getElementById('toast');x.textContent=t;x.style.display='block';setTimeout(()=>x.style.display='none',1800)}
 function tab(id,el){document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));el.classList.add('active');update()}
 function saveLog(){let l=logs();l.unshift({date:new Date().toISOString(),type:type.value,dist:+dist.value||0,dur:+dur.value||0,rpe:+rpeIn.value||0,sleep:+sleepIn.value||0,stress:+stressIn.value||0,battery:+batteryIn.value||0,note:note.value});localStorage.setItem(KEY,JSON.stringify(l.slice(0,200)));note.value='';dist.value='';dur.value='';rpeIn.value='';sleepIn.value='';stressIn.value='';batteryIn.value='';toast('Training + Recovery gespeichert');update()}
+function val(id){const el=document.getElementById(id);return el?el.value:''}
 function saveProfile(){
  const p={
-  pb1500:pb1500.value.trim(),pb3000:pb3000.value.trim(),pb5k:pb5k.value.trim(),pb10k:pb10k.value.trim(),pbHm:pbHm.value.trim(),pbMarathon:pbMarathon.value.trim(),
-  status:status.value,statusSince:statusSince.value,statusNote:statusNote.value.trim(),
-  goal1:goal1.value.trim(),goalDate1:goalDate1.value,goal2:goal2.value.trim(),goalDate2:goalDate2.value,goal3:goal3.value.trim(),goalDate3:goalDate3.value
+  pb1500:val('pb1500').trim(),pb3000:val('pb3000').trim(),pb5k:val('pb5k').trim(),pb10k:val('pb10k').trim(),pbHm:val('pbHm').trim(),pbMarathon:val('pbMarathon').trim(),
+  status:val('status')||'fit',statusSince:val('statusSince'),statusNote:val('statusNote').trim(),
+  goal1:val('goal1').trim(),goalDate1:val('goalDate1'),goal2:val('goal2').trim(),goalDate2:val('goalDate2'),goal3:val('goal3').trim(),goalDate3:val('goalDate3')
  };
  localStorage.setItem(PROFILE_KEY,JSON.stringify(p));toast('Athletenprofil gespeichert');update();
 }
@@ -57,7 +58,7 @@ function loadProfile(){
  const p=profile(); if(!p)return;
  ['pb1500','pb3000','pb5k','pb10k','pbHm','pbMarathon','status','statusSince','statusNote','goal1','goalDate1','goal2','goalDate2','goal3','goalDate3'].forEach(id=>{if(document.getElementById(id)&&p[id]!==undefined)document.getElementById(id).value=p[id]});
 }
-function clearProfile(){localStorage.removeItem(PROFILE_KEY);document.querySelectorAll('#profile input,#profile textarea').forEach(x=>x.value='');status.value='fit';toast('Profil zurückgesetzt');update()}
+function clearProfile(){localStorage.removeItem(PROFILE_KEY);document.querySelectorAll('#profile input,#profile textarea').forEach(x=>x.value='');const s=document.getElementById('status');if(s)s.value='fit';toast('Profil zurückgesetzt');update()}
 function statusLabel(s){return {fit:'voll belastbar / im Training',return:'aus Pause zurück',injury:'verletzt / eingeschränkt',illness:'nach Krankheit zurück',other:'eingeschränkter Status'}[s]||'nicht angegeben'}
 function fmtDate(d){if(!d)return '';return new Date(d+'T12:00:00').toLocaleDateString('de-DE')}
 function profileText(){
