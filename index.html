@@ -117,8 +117,8 @@ function update(){
 }
 function localDayKey(date){const d=new Date(date);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
 function todayPlanIndex(){const d=new Date().getDay();return d===0?6:d-1}
-function todayCompletion(){const key=localDayKey(new Date());return logs().find(e=>e.kind==='completion'&&localDayKey(e.date)===key)||null}
-function previousCompletion(){const today=localDayKey(new Date());return logs().find(e=>e.kind==='completion'&&localDayKey(e.date)!==today)||null}
+function todayCompletion(){const key=localDayKey(new Date());return logs().find(e=>e.completed&&localDayKey(e.date)===key)||null}
+function previousCompletion(){const now=Date.now(),today=localDayKey(new Date());return logs().find(e=>e.completed&&localDayKey(e.date)!==today&&now-new Date(e.date).getTime()<=48*3600000)||null}
 function dailyWorkoutDecision(){
  const base=planDayData(todayPlanIndex())||{title:'Individuelle Einheit',pace:'Nach Tagesgefühl',desc:'Belastung kontrolliert und individuell verträglich durchführen.',effect:'Belastung steuern und Reaktion beobachten.',alt:''};
  const rec=recoveryState(),prev=previousCompletion();
@@ -155,7 +155,7 @@ function completeTodayWorkout(){
  const w=dailyWorkoutDecision(),dist=+val('actualDist')||0,dur=+val('actualDur')||0,rpe=+val('actualRpe')||0,response=val('actualResponse')||'stable',note=val('actualNote').trim();
  if(!dur&&!dist){toast('Bitte Dauer oder Distanz eintragen');return}
  if(!rpe){toast('Bitte tatsächliches RPE eintragen');return}
- const entry={date:new Date().toISOString(),kind:'completion',type:w.title,dist,dur,rpe,response,load:sessionLoad({dur,rpe}),plannedPace:w.pace,plannedDesc:w.desc,plannedEffect:w.effect,note};
+ const entry={date:new Date().toISOString(),kind:'run',completed:true,type:w.title,dist,dur,rpe,response,load:sessionLoad({dur,rpe}),plannedPace:w.pace,plannedDesc:w.desc,plannedEffect:w.effect,note};
  saveEntry(entry,'Einheit abgeschlossen');
  localStorage.removeItem('pacecoach01_active_workout');
 }
