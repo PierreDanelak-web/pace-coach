@@ -40,11 +40,12 @@
 <div class="card"><div class="eyebrow">Coach-Kontext</div><p id="profileSummary" class="muted small">Noch kein Athletenprofil gespeichert.</p></div>
 </section><section id="coach"><div class="eyebrow">Coach · 0.1</div><h1>Coach</h1><div class="card"><p class="coach">0.1 arbeitet lokal mit deinen gespeicherten Trainingsdaten. Ein echter Cloud-KI-Coach und Garmin folgen später.</p><button class="btn" onclick="update()">Coach aktualisieren</button></div></section></main><nav><button class="active" onclick="tab('home',this)">Heute</button><button onclick="tab('week',this)">Woche</button><button onclick="tab('log',this)">Training</button><button onclick="tab('analysis',this)">Analyse</button><button onclick="tab('garmin',this)">Garmin</button><button onclick="tab('profile',this)">Profil</button><button onclick="tab('coach',this)">Coach</button></nav><script>
 const KEY='pacecoach01_logs', PROFILE_KEY='pacecoach01_profile';
-function logs(){return JSON.parse(localStorage.getItem(KEY)||'[]')}
-function profile(){return JSON.parse(localStorage.getItem(PROFILE_KEY)||'null')}
+function logs(){try{return JSON.parse(localStorage.getItem(KEY)||'[]')}catch(e){return []}}
+function profile(){try{return JSON.parse(localStorage.getItem(PROFILE_KEY)||'null')}catch(e){return null}}
+function setStored(key,value){try{localStorage.setItem(key,value);return true}catch(e){toast('Speichern im Browser nicht möglich');return false}}
 function toast(t){let x=document.getElementById('toast');x.textContent=t;x.style.display='block';setTimeout(()=>x.style.display='none',1800)}
 function tab(id,el){document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));el.classList.add('active');update()}
-function saveLog(){let l=logs();l.unshift({date:new Date().toISOString(),type:type.value,dist:+dist.value||0,dur:+dur.value||0,rpe:+rpeIn.value||0,sleep:+sleepIn.value||0,stress:+stressIn.value||0,battery:+batteryIn.value||0,note:note.value});localStorage.setItem(KEY,JSON.stringify(l.slice(0,200)));note.value='';dist.value='';dur.value='';rpeIn.value='';sleepIn.value='';stressIn.value='';batteryIn.value='';toast('Training + Recovery gespeichert');update()}
+function saveLog(){const l=logs();const entry={date:new Date().toISOString(),type:val('type'),dist:+val('dist')||0,dur:+val('dur')||0,rpe:+val('rpeIn')||0,sleep:+val('sleepIn')||0,stress:+val('stressIn')||0,battery:+val('batteryIn')||0,note:val('note').trim()};l.unshift(entry);if(!setStored(KEY,JSON.stringify(l.slice(0,200))))return;['note','dist','dur','rpeIn','sleepIn','stressIn','batteryIn'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=''});toast('Training + Recovery gespeichert');update()}
 function val(id){const el=document.getElementById(id);return el?el.value:''}
 function saveProfile(){
  const p={
@@ -52,13 +53,13 @@ function saveProfile(){
   status:val('status')||'fit',statusSince:val('statusSince'),statusNote:val('statusNote').trim(),
   goal1:val('goal1').trim(),goalDate1:val('goalDate1'),goal2:val('goal2').trim(),goalDate2:val('goalDate2'),goal3:val('goal3').trim(),goalDate3:val('goalDate3')
  };
- localStorage.setItem(PROFILE_KEY,JSON.stringify(p));toast('Athletenprofil gespeichert');update();
+ if(setStored(PROFILE_KEY,JSON.stringify(p))){loadProfile();toast('Athletenprofil gespeichert');update();}
 }
 function loadProfile(){
  const p=profile(); if(!p)return;
  ['pb1500','pb3000','pb5k','pb10k','pbHm','pbMarathon','status','statusSince','statusNote','goal1','goalDate1','goal2','goalDate2','goal3','goalDate3'].forEach(id=>{if(document.getElementById(id)&&p[id]!==undefined)document.getElementById(id).value=p[id]});
 }
-function clearProfile(){localStorage.removeItem(PROFILE_KEY);document.querySelectorAll('#profile input,#profile textarea').forEach(x=>x.value='');const s=document.getElementById('status');if(s)s.value='fit';toast('Profil zurückgesetzt');update()}
+function clearProfile(){try{localStorage.removeItem(PROFILE_KEY)}catch(e){toast('Profil konnte nicht zurückgesetzt werden');return}document.querySelectorAll('#profile input,#profile textarea').forEach(x=>x.value='');const s=document.getElementById('status');if(s)s.value='fit';toast('Profil zurückgesetzt');update()}
 function statusLabel(s){return {fit:'voll belastbar / im Training',return:'aus Pause zurück',injury:'verletzt / eingeschränkt',illness:'nach Krankheit zurück',other:'eingeschränkter Status'}[s]||'nicht angegeben'}
 function fmtDate(d){if(!d)return '';return new Date(d+'T12:00:00').toLocaleDateString('de-DE')}
 function profileText(){
@@ -85,7 +86,7 @@ function update(){
 function paceText(d,m){if(!d||!m)return 'Pace –';let sec=(m/d)*60,mi=Math.floor(sec/60),s=Math.round(sec%60);if(s===60){mi++;s=0}return 'Pace '+mi+':'+String(s).padStart(2,'0')+' min/km'}
 function updatePacePreview(){pacePreview.textContent=dist.value&&dur.value?paceText(+dist.value,+dur.value):'Pace wird automatisch aus Distanz und Dauer berechnet.'}
 dist.addEventListener('input',updatePacePreview);dur.addEventListener('input',updatePacePreview);
-function showDay(title,pace,desc){document.getElementById('dayTitle').textContent=title;document.getElementById('dayPace').textContent=pace;document.getElementById('dayDesc').textContent=desc;document.getElementById('dayDetail').style.display='block';document.getElementById('dayDetail').scrollIntoView({behavior:'smooth',block:'nearest'})}
+function showDay(title,pace,desc,effect){document.getElementById('dayTitle').textContent=title;document.getElementById('dayPace').textContent=pace;document.getElementById('dayDesc').innerHTML='<b>Durchführung</b><br>'+desc+'<br><br><b>Primärer Trainingsreiz</b><br>'+effect;document.getElementById('dayDetail').style.display='block';document.getElementById('dayDetail').scrollIntoView({behavior:'smooth',block:'nearest'})}
 function recoveryState(){const l=logs();if(!l.length)return null;const x=l[0];const vals=[x.sleep,x.stress,x.battery].filter(v=>typeof v==='number'&&v>0);if(vals.length<3)return null;let score=(x.sleep+(100-x.stress)+x.battery)/3;return {score,sleep:x.sleep,stress:x.stress,battery:x.battery,low:score<45,moderate:score<65};}
 function currentPlan(){
  const p=profile(); const s=p?.status||'fit'; const rec=recoveryState();
@@ -126,7 +127,7 @@ function renderPlan(){
  const rec=recoveryState();
  document.getElementById('planModeTitle').textContent=plan.title;
  document.getElementById('planModeText').textContent=plan.text;
- box.innerHTML=plan.days.map((d,i)=>{let pace=d[1];let desc=d[2];if(i===1&&rec?.low){pace='Recovery-Anpassung · 20–30 min sehr locker / Mobility';desc='Der Wochenplan bleibt als Orientierung bestehen. Wegen niedriger Recovery wird der heutige Reiz reduziert.'}else if(i===1&&rec?.moderate){pace='Kontrolliert · 25–35 min locker';desc='Der Wochenplan bleibt bestehen, aber der nächste Reiz wird bei mittlerer Recovery bewusst reduziert.'}return '<div class="day"><b>'+d[0]+'</b><span class="muted">'+pace+'</span><button class="btn secondary" onclick="showDay('+JSON.stringify(d[0])+','+JSON.stringify(pace)+','+JSON.stringify(desc)+')">Details</button></div>'}).join('');
+ box.innerHTML=plan.days.map((d,i)=>{let pace=d[1];let desc=d[2];let effect=d[3]||'Belastung gezielt steuern und die Reaktion auf die Einheit beobachten.';if(i===1&&rec?.low){pace='Recovery-Anpassung · 20–30 min sehr locker / Mobility';desc='Der Wochenplan bleibt als Orientierung bestehen. Wegen niedriger Recovery wird der heutige Reiz reduziert.';effect='Recovery priorisieren: Belastung senken und keine Qualitätsarbeit erzwingen.'}else if(i===1&&rec?.moderate){pace='Kontrolliert · 25–35 min locker';desc='Der Wochenplan bleibt bestehen, aber der nächste Reiz wird bei mittlerer Recovery bewusst reduziert.';effect='Aerobe Grundlage erhalten, ohne zusätzliche hohe Ermüdung aufzubauen.'}return '<div class="day"><b>'+d[0]+'</b><span class="muted">'+pace+'</span><button class="btn secondary" onclick="showDay('+JSON.stringify(d[0])+','+JSON.stringify(pace)+','+JSON.stringify(desc)+','+JSON.stringify(effect)+')">Details</button></div>'}).join('');
 }
 
 function garminInfo(){toast('Garmin-Schnittstelle wird vorbereitet');}
