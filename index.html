@@ -79,14 +79,14 @@ function update(){
  document.getElementById('profileSummary').textContent=profileText();
  renderPlan();
  const p=profile(); const s=p?.status||'fit';
- if(s==='return'){todayWorkout.textContent='Grundlage + Mobility';todayText.textContent='Wiedereinstieg: heute bewusst locker. Erst regelmäßige, verträgliche Belastung aufbauen – Qualität kommt später.'}
+ const todayWorkout=document.getElementById('todayWorkout'),todayText=document.getElementById('todayText'); if(s==='return'){todayWorkout.textContent='Grundlage + Mobility';todayText.textContent='Wiedereinstieg: heute bewusst locker. Erst regelmäßige, verträgliche Belastung aufbauen – Qualität kommt später.'}
  else if(s==='injury'){todayWorkout.textContent='Reha + Recovery';todayText.textContent='Eingeschränkter Modus: heute nur individuell freigegebene, schmerzfreie Belastung. Kein Qualitätstraining.'}
  else {todayWorkout.textContent='Athletics + Mobility';todayText.textContent='Heute bewusst einen regenerativen Reiz setzen. Qualität vor Umfang.'}
 }
 function paceText(d,m){if(!d||!m)return 'Pace –';let sec=(m/d)*60,mi=Math.floor(sec/60),s=Math.round(sec%60);if(s===60){mi++;s=0}return 'Pace '+mi+':'+String(s).padStart(2,'0')+' min/km'}
-function updatePacePreview(){pacePreview.textContent=dist.value&&dur.value?paceText(+dist.value,+dur.value):'Pace wird automatisch aus Distanz und Dauer berechnet.'}
-dist.addEventListener('input',updatePacePreview);dur.addEventListener('input',updatePacePreview);
-function showDay(title,pace,desc,effect){document.getElementById('dayTitle').textContent=title;document.getElementById('dayPace').textContent=pace;document.getElementById('dayDesc').innerHTML='<b>Durchführung</b><br>'+desc+'<br><br><b>Primärer Trainingsreiz</b><br>'+effect;document.getElementById('dayDetail').style.display='block';document.getElementById('dayDetail').scrollIntoView({behavior:'smooth',block:'nearest'})}
+function updatePacePreview(){const d=document.getElementById('dist'),m=document.getElementById('dur'),p=document.getElementById('pacePreview');p.textContent=d.value&&m.value?paceText(+d.value,+m.value):'Pace wird automatisch aus Distanz und Dauer berechnet.'}
+document.getElementById('dist').addEventListener('input',updatePacePreview);document.getElementById('dur').addEventListener('input',updatePacePreview);
+function showDay(title,pace,desc,effect){document.getElementById('dayTitle').textContent=title;document.getElementById('dayPace').innerHTML='<b>Pace / Belastung</b><br>'+pace;document.getElementById('dayDesc').innerHTML='<b>Durchführung</b><br>'+desc+'<br><br><b>Primärer Trainingsreiz</b><br>'+effect;document.getElementById('dayDetail').style.display='block';document.getElementById('dayDetail').scrollIntoView({behavior:'smooth',block:'nearest'})}
 function recoveryState(){const l=logs();if(!l.length)return null;const x=l[0];const vals=[x.sleep,x.stress,x.battery].filter(v=>typeof v==='number'&&v>0);if(vals.length<3)return null;let score=(x.sleep+(100-x.stress)+x.battery)/3;return {score,sleep:x.sleep,stress:x.stress,battery:x.battery,low:score<45,moderate:score<65};}
 function currentPlan(){
  const p=profile(); const s=p?.status||'fit'; const rec=recoveryState();
