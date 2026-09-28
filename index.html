@@ -119,11 +119,47 @@ function localDayKey(date){const d=new Date(date);return d.getFullYear()+'-'+Str
 function todayPlanIndex(){const d=new Date().getDay();return d===0?6:d-1}
 function todayCompletion(){const key=localDayKey(new Date());return logs().find(e=>e.completed&&localDayKey(e.date)===key)||null}
 function previousCompletion(){const now=Date.now(),today=localDayKey(new Date());return logs().find(e=>e.completed&&localDayKey(e.date)!==today&&now-new Date(e.date).getTime()<=48*3600000)||null}
+function adaptiveSessionPrescription(base,prev,rec){
+ if(!prev)return null;
+ const nextTitle=(base.title||'').toLowerCase();
+ const prevTitle=(prev.type||'').toLowerCase();
+ const hardPrev=/(quality|threshold|schwelle|intervall|tempo|wettkampf)/.test(prevTitle);
+ const easyNext=/(locker|recovery|regeneration|grundlage|long run)/.test(nextTitle);
+ if(prev.response==='higher'||(+prev.rpe||0)>=8){
+   return {
+     title:'Morgen · Belastung gezielt reduzieren',
+     pace:'35–45 min sehr locker @ 4:30–5:05 min/km · RPE 3–4',
+     desc:'10 min sehr locker anlaufen. Danach 20–30 min gleichmäßig locker. 5 min auslaufen. Keine Intervalle, kein Tempodruck, keine Endbeschleunigung.',
+     effect:'Ermüdung abbauen und die nächste Qualitätsentscheidung erst nach stabiler Reaktion treffen.',
+     decision:'Die letzte Einheit war höher belastend als geplant. Der nächste Reiz wird deshalb konkret als lockere Einheit vorgegeben.'
+   };
+ }
+ if(prev.response==='stable'&&easyNext&&!hardPrev){
+   return {
+     title:'Morgen · Locker + 6 Steigerungen',
+     pace:'40–50 min locker @ 4:15–4:45 min/km · RPE 3–4',
+     desc:'35–40 min locker und gleichmäßig. Danach 6 × 20 s lockere Steigerung mit jeweils 60–90 s Gehen/Traben. Die Steigerungen bleiben technisch sauber und deutlich unter Sprint.',
+     effect:'Aerobe Grundlage erhalten und einen kleinen neuromuskulären Reiz setzen, ohne die Gesamtbelastung stark zu erhöhen.',
+     decision:'Die letzte Einheit war stabil. Deshalb wird die nächste lockere Einheit konkret um einen kleinen Technik-/Strides-Reiz ergänzt.'
+   };
+ }
+ if(prev.response==='lower'&&easyNext){
+   return {
+     title:'Morgen · Kontrolliert locker',
+     pace:'40–50 min locker @ 4:20–4:50 min/km · RPE 3–4',
+     desc:'40–50 min gleichmäßig locker. Keine zusätzliche Intensität erzwingen. Nur wenn sich die Beine nach 20 min klar gut anfühlen, optional 4 × 20 s lockere Steigerung.',
+     effect:'Belastung stabilisieren und die tatsächliche Verträglichkeit beobachten.',
+     decision:'Die letzte Einheit war leichter als geplant. Der Coach erhöht die Belastung trotzdem nicht automatisch, sondern prüft zuerst die Verträglichkeit.'
+   };
+ }
+ return null;
+}
 function dailyWorkoutDecision(){
  const base=planDayData(todayPlanIndex())||{title:'Individuelle Einheit',pace:'Nach Tagesgefühl',desc:'Belastung kontrolliert und individuell verträglich durchführen.',effect:'Belastung steuern und Reaktion beobachten.',alt:''};
  const rec=recoveryState(),prev=previousCompletion();
  const title=(base.title||'').toLowerCase(),quality=/(quality|threshold|schwelle|intervall|tempo|wettkampf)/.test(title);
  let out={...base,decision:'Die geplante Einheit ist heute der Ausgangspunkt. Durchführung und Belastung werden über Recovery und tatsächliche Reaktion gesteuert.',tag:'PLAN'};
+ const adaptive=adaptiveSessionPrescription(base,prev,rec);
  if(quality&&(rec?.low||prev?.response==='higher'||(+prev?.rpe||0)>=8)){
    out.title='Heute · Belastung reduziert';
    out.pace='30–45 min sehr locker @ 4:30–5:10 min/km · RPE 3–4';
@@ -138,6 +174,8 @@ function dailyWorkoutDecision(){
    out.effect='Qualitätsreiz erhalten, aber Gesamtbelastung gegenüber dem ursprünglichen Plan reduzieren.';
    out.decision='Recovery ist mittel – die Qualität bleibt möglich, wird aber bewusst mit reduziertem Umfang und kontrollierter Intensität durchgeführt.';
    out.tag='KONTROLLIERT';
+ }else if(adaptive){
+   out.title=adaptive.title;out.pace=adaptive.pace;out.desc=adaptive.desc;out.effect=adaptive.effect;out.decision=adaptive.decision;out.tag='ADAPTIV';
  }else if(prev?.response==='higher'||(+prev?.rpe||0)>=8){
    out.decision='Die letzte Einheit war höher belastend als geplant. Heute bleibt die Einheit bewusst kontrolliert.';
    out.tag='REAKTION';
