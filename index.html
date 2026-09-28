@@ -177,7 +177,53 @@ function paceText(d,m){if(!d||!m)return 'Pace –';let sec=(m/d)*60,mi=Math.floo
 function updatePacePreview(){const d=document.getElementById('runDist'),m=document.getElementById('runDur'),p=document.getElementById('runPacePreview');if(!d||!m||!p)return;p.textContent=d.value&&m.value?paceText(+d.value,+m.value):'Pace wird automatisch aus Distanz und Dauer berechnet.'}
 document.getElementById('runDist').addEventListener('input',updatePacePreview);document.getElementById('runDur').addEventListener('input',updatePacePreview);
 function showDay(title,pace,desc,effect,alt){const detail=document.getElementById('dayDetail');if(!detail)return;document.getElementById('dayTitle').textContent=title;document.getElementById('dayPace').innerHTML='<b>Belastungsbereich</b><br>'+pace;document.getElementById('dayDesc').innerHTML='<b>Durchführung</b><br>'+desc+'<br><br><b>Primärer Trainingsreiz</b><br>'+effect;const a=document.getElementById('dayAlt');if(a){a.style.display=alt?'block':'none';a.innerHTML=alt?'<b>Alternative Einheit</b><br>'+alt:''}detail.style.display='block';detail.scrollIntoView({behavior:'smooth',block:'center'})}
-function planDayData(index){const plan=currentPlan(),d=plan.days[index];if(!d)return null;let pace=d[1]||'Keine Lauf-Pace';let desc=d[2]||'Individuell und kontrolliert durchführen.';let effect=d[3]||'Belastung gezielt steuern und die Reaktion auf die Einheit beobachten.';let alt=d[4]||'';if(!alt&&/^(Crosstrainer|Indoorcycling)/i.test(effect)){alt=effect;effect='Aerobe Belastung erhalten und den Trainingsreiz ohne Laufbelastung steuern.'}const rec=recoveryState();if(index===1&&rec?.low){pace='Recovery-Anpassung · 20–30 min sehr locker / Mobility';desc='Der Wochenplan bleibt als Orientierung bestehen. Wegen niedriger Recovery wird der heutige Reiz reduziert.';effect='Recovery priorisieren: Belastung senken und keine Qualitätsarbeit erzwingen.'}else if(index===1&&rec?.moderate){pace='Kontrolliert · 25–35 min locker';desc='Der Wochenplan bleibt bestehen, aber der nächste Reiz wird bei mittlerer Recovery bewusst reduziert.';effect='Aerobe Grundlage erhalten, ohne zusätzliche hohe Ermüdung aufzubauen.'}return {title:d[0],pace,desc,effect,alt}}
+function weekAdaptiveState(){
+ const now=Date.now(),today=todayPlanIndex();
+ const completed=logs().filter(e=>e.completed&&now-new Date(e.date).getTime()<=72*3600000).sort((a,b)=>new Date(b.date)-new Date(a.date));
+ const latest=completed[0]||null,rec=recoveryState(),load7=recentLoad(7);
+ const highReaction=!!latest&&(latest.response==='higher'||(+latest.rpe||0)>=8);
+ const lowRecovery=!!rec?.low,moderateRecovery=!!rec?.moderate;
+ return {today,latest,rec,load7,highReaction,lowRecovery,moderateRecovery};
+}
+function planDayData(index){
+ const plan=currentPlan(),d=plan.days[index];if(!d)return null;
+ let pace=d[1]||'Keine Lauf-Pace',desc=d[2]||'Individuell und kontrolliert durchführen.',effect=d[3]||'Belastung gezielt steuern und die Reaktion auf die Einheit beobachten.',alt=d[4]||'';
+ if(!alt&&/^(Crosstrainer|Indoorcycling)/i.test(effect)){alt=effect;effect='Aerobe Belastung erhalten und den Trainingsreiz ohne Laufbelastung steuern.'}
+ const rec=recoveryState(),state=weekAdaptiveState(),title=(d[0]||'').toLowerCase(),future=index>state.today;
+ let adapted=false,adaptation='';
+ if(index===1&&rec?.low){
+   pace='Recovery-Anpassung · 20–30 min sehr locker / Mobility';desc='Der Wochenplan bleibt als Orientierung bestehen. Wegen niedriger Recovery wird der heutige Reiz reduziert.';effect='Recovery priorisieren: Belastung senken und keine Qualitätsarbeit erzwingen.';adapted=true;adaptation='Heute wegen niedriger Recovery reduziert.';
+ }else if(index===1&&rec?.moderate){
+   pace='Kontrolliert · 25–35 min locker';desc='Der Wochenplan bleibt bestehen, aber der nächste Reiz wird bei mittlerer Recovery bewusst reduziert.';effect='Aerobe Grundlage erhalten, ohne zusätzliche hohe Ermüdung aufzubauen.';adapted=true;adaptation='Heute wegen mittlerer Recovery kontrolliert.';
+ }
+ if(future&&(state.highReaction||state.lowRecovery||state.load7>600)){
+   const reason=state.highReaction?'letzte Belastungsreaktion war erhöht':state.lowRecovery?'Recovery ist niedrig':'die 7-Tage-Belastung ist erhöht';
+   if(/quality|threshold|schwelle|intervall|tempo|wettkampf/.test(title)){
+     pace='30–45 min sehr locker @ 4:30–5:10 min/km · RPE 3–4';
+     desc='Der geplante Qualitätsreiz wird verschoben. 10–15 min sehr locker, danach 15–25 min gleichmäßig locker, 5 min auslaufen. Kein Intervall und kein Tempodruck.';
+     effect='Ermüdung kontrollieren und die aerobe Grundlage erhalten. Der Qualitätsreiz wird erst nach stabiler Reaktion erneut geprüft.';
+     alt='';
+     adapted=true;adaptation='Coach-Anpassung: Qualitätsreiz verschoben, weil '+reason+'.';
+   }else if(/long run|grundlagenlauf/.test(title)){
+     pace='Reduziert · 12–16 km @ 4:25–4:55 min/km';
+     desc='Umfang gegenüber dem ursprünglichen Long Run reduzieren. Gleichmäßig locker laufen, keine Endbeschleunigung. Bei auffälliger Ermüdung früher beenden.';
+     effect='Grundlagenreiz erhalten, aber Gesamtbelastung nach oben begrenzen.';
+     adapted=true;adaptation='Coach-Anpassung: Long Run reduziert, weil '+reason+'.';
+   }else if(/locker|recovery|grundlage/.test(title)){
+     pace='30–45 min locker @ 4:30–5:05 min/km';
+     desc='Locker und gleichmäßig. Umfang flexibel im unteren Bereich halten und Tagesreaktion beobachten.';
+     effect='Regeneration bzw. aerobe Grundlage unterstützen, ohne zusätzliche Ermüdung aufzubauen.';
+     adapted=true;adaptation='Coach-Anpassung: lockerer Umfang begrenzt, weil '+reason+'.';
+   }
+ }
+ if(future&&state.moderateRecovery&&!adapted&&/quality|threshold|schwelle|intervall|tempo|wettkampf/.test(title)){
+   pace='Qualitätsreiz reduziert · RPE maximal 6–7';
+   desc='Einlaufen 15–20 min. Den geplanten Reiz mit reduziertem Umfang durchführen; Pausen vollständig locker. Bei steigender Ermüdung abbrechen und auslaufen.';
+   effect='Qualitätsreiz erhalten, aber die Gesamtbelastung bewusst reduzieren.';
+   adapted=true;adaptation='Coach-Anpassung: Qualitätsumfang reduziert, weil Recovery mittel ist.';
+ }
+ return {title:d[0],pace,desc,effect,alt,adapted,adaptation};
+}
 function showPlanDay(index,alternative){const d=planDayData(index);if(!d)return;if(alternative&&d.alt){showDay(d.title,'Alternative statt Laufen',d.desc,d.effect,d.alt)}else{showDay(d.title,d.pace,d.desc,d.effect,d.alt)}}
 function recoveryState(){const l=logs();const x=l.find(e=>e.kind==='recovery'&&e.sleep>0&&e.stress>0&&e.battery>0)||l.find(e=>e.sleep>0&&e.stress>0&&e.battery>0);if(!x)return null;let score=(x.sleep+(100-x.stress)+x.battery)/3;return {score,sleep:x.sleep,stress:x.stress,battery:x.battery,low:score<45,moderate:score<65};}
 function currentPlan(){
@@ -216,8 +262,13 @@ function currentPlan(){
 }
 function alternativeAllowed(data){if(!data)return false;const t=(data.title||'').toLowerCase();const p=(data.pace||'').toLowerCase();const isQuality=/(quality|threshold|schwelle|intervall|tempo|wettkampf)/.test(t);const isBlocked=/(strength|kraft|athletics|mobility)/.test(t);const explicitlyAlternative=/alternative einheit/.test(p);const isRunOrEasy=/(locker|grundlage|long run|grundlagenlauf|laufen|recovery|reha)/.test(t);return !!data.alt&&!isQuality&&!isBlocked&&(explicitlyAlternative||isRunOrEasy)}
 function alternativeLabel(data){const t=(data.title||'').toLowerCase();if(/long run|grundlagenlauf/.test(t))return 'Ausweichoption · aerobe Dauerbelastung';if(/reha/.test(t))return 'Ausweichoption · kontrollierte aerobe Belastung';if(/recovery/.test(t))return 'Ausweichoption · sehr lockere Ausdauer';if(/grundlage/.test(t))return 'Ausweichoption · lockerer Ausdauerreiz';return 'Ausweichoption · lockere Ausdauerbelastung'}
-function renderPlan(){const plan=currentPlan(),box=document.getElementById('weekPlan');if(!box)return;document.getElementById('planModeTitle').textContent=plan.title;document.getElementById('planModeText').textContent=plan.text;box.innerHTML='<div class="eyebrow">Wochensteuerung</div><p class="muted small">Die sichtbare Einheit ist die geplante Haupteinheit. Details erklären dem Athleten genau, wie sie ausgeführt wird. Eine Ausweichoption erscheint nur bei lockeren Lauf-/Grundlageneinheiten und ersetzt dann die Laufeinheit vollständig.</p>'+plan.days.map((d,i)=>{const data=planDayData(i);const canAlt=alternativeAllowed(data);const status=(i===1&&recoveryState()?.low)?'<span class="plan-status">Recovery reduziert</span>':'';return '<div class="day"><b>'+data.title+'</b>'+status+'<div class="plan-meta"><span class="muted"><b>Belastungsbereich</b><br>'+data.pace+'</span></div><div class="day-actions"><details class="plan-details"><summary class="btn secondary">Details</summary><div class="plan-detail-body"><b>Durchführung</b><br>'+data.desc+'<br><br><b>Primärer Trainingsreiz</b><br>'+data.effect+'</div></details>'+(canAlt?'<details class="plan-alt"><summary>'+alternativeLabel(data)+'</summary><div class="plan-alt-body"><span class="plan-chip">Wenn heute nicht gelaufen wird</span><br><strong>'+data.alt+'</strong><br><span class="muted small">Das ist eine vollständige Ausweich-Einheit und ersetzt die geplante Laufeinheit – nicht zusätzlich absolvieren. Intensität, Widerstand und Dauer sind bewusst vorgegeben. Nur wählen, wenn die Belastung individuell freigegeben und verträglich ist.</span></div></details>':'')+'</div></div>'}).join('')}
-
+function renderPlan(){
+ const plan=currentPlan(),box=document.getElementById('weekPlan');if(!box)return;
+ document.getElementById('planModeTitle').textContent=plan.title;document.getElementById('planModeText').textContent=plan.text;
+ const state=weekAdaptiveState();
+ const coachNote=state.highReaction?'Die letzte abgeschlossene Einheit war höher belastend als geplant. PACE//COACH prüft deshalb alle noch kommenden Tage neu.':state.lowRecovery?'Recovery ist niedrig. Kommende Qualitätsreize werden automatisch reduziert oder verschoben.':state.moderateRecovery?'Recovery ist mittel. Kommende Qualitätsreize werden mit reduziertem Umfang geprüft.':state.load7>600?'Die 7-Tage-Belastung ist erhöht. Der Coach hält die restliche Woche kontrolliert.':'Nach jeder abgeschlossenen Einheit wird die restliche Woche neu bewertet.';
+ box.innerHTML='<div class="eyebrow">Wochensteuerung</div><p class="muted small">'+coachNote+'</p>'+plan.days.map((d,i)=>{const data=planDayData(i),canAlt=alternativeAllowed(data),status=data.adapted?'<span class="plan-status">Coach angepasst</span>':((i===1&&recoveryState()?.low)?'<span class="plan-status">Recovery reduziert</span>':'');return '<div class="day"><b>'+data.title+'</b>'+status+'<div class="plan-meta"><span class="muted"><b>Belastungsbereich</b><br>'+data.pace+'</span></div>'+(data.adaptation?'<p class="muted small">'+data.adaptation+'</p>':'')+'<div class="day-actions"><details class="plan-details"><summary class="btn secondary">Details</summary><div class="plan-detail-body"><b>Durchführung</b><br>'+data.desc+'<br><br><b>Primärer Trainingsreiz</b><br>'+data.effect+'</div></details>'+(canAlt?'<details class="plan-alt"><summary>'+alternativeLabel(data)+'</summary><div class="plan-alt-body"><span class="plan-chip">Wenn heute nicht gelaufen wird</span><br><strong>'+data.alt+'</strong><br><span class="muted small">Das ist eine vollständige Ausweich-Einheit und ersetzt die geplante Laufeinheit – nicht zusätzlich absolvieren. Intensität, Widerstand und Dauer sind bewusst vorgegeben. Nur wählen, wenn die Belastung individuell freigegeben und verträglich ist.</span></div></details>':'')+'</div></div>'}).join('')
+}
 function garminInfo(){toast('Garmin-Schnittstelle wird vorbereitet');}
 function speak(){if(!('speechSynthesis'in window)){toast('Sprachausgabe nicht verfügbar');return}speechSynthesis.speak(new SpeechSynthesisUtterance(coachText.textContent))}
 function voiceLog(){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){toast('Spracheingabe in diesem Browser nicht verfügbar');return}let r=new SR();r.lang='de-DE';r.onresult=e=>{note.value=e.results[0][0].transcript;toast('Sprachnotiz übernommen')};r.start()}
