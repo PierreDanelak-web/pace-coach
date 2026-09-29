@@ -21,7 +21,7 @@ nav{position:fixed;left:0;right:0;bottom:0;background:rgba(8,10,12,.98);border-t
 <section id="home" class="active">
 <div class="eyebrow">Dashboard</div><h1>Heute</h1>
 <div class="card hero"><div class="eyebrow">KI-Coach</div><div id="todayTitle" class="workout">Deine Einheit wird berechnet …</div><p id="todayReason" class="muted"></p><div class="row"><button class="btn" data-tab="coach">Coach öffnen</button><button class="btn secondary" data-tab="log">Training eintragen</button></div></div>
-<div class="row"><div class="metric"><span>7 Tage · Lauf-km</span><b id="homeKm">0.0</b></div><div class="metric"><span>7 Tage · Einheiten</span><b id="homeSessions">0</b></div><div class="metric"><span>Ø RPE</span><b id="homeRpe">–</b></div></div>
+<div class="row"><div class="metric"><span>7 Tage · Lauf-km</span><b id="homeKm">0.0</b><button class="btn secondary mini" data-tab="log">+ Lauf eintragen</button></div><div class="metric"><span>7 Tage · Einheiten</span><b id="homeSessions">0</b><button class="btn secondary mini" data-tab="log">Training</button></div><div class="metric"><span>Ø RPE</span><b id="homeRpe">–</b></div></div>
 <div class="card"><div class="eyebrow">Belastung</div><div class="row"><div class="metric"><span>Load 7T</span><b id="load7">0</b></div><div class="metric"><span>Load 28T</span><b id="load28">0</b></div><div class="metric"><span>Trend</span><b id="trend">–</b></div></div></div>
 <div class="card"><div class="eyebrow">PACE//COACH Module</div><div class="row"><button class="btn secondary" data-tab="calendar">Kalender</button><button class="btn secondary" data-tab="workout">Workout</button><button class="btn secondary" data-tab="paces">Pace Lab</button><button class="btn secondary" data-tab="races">Wettkampf</button><button class="btn secondary" data-tab="memory">Coach Memory</button><button class="btn secondary" data-tab="voice">Sprache</button><button class="btn secondary" data-tab="media">Foto / Video</button></div></div><div class="card"><div class="eyebrow">Weitere Module</div><div class="row"><button class="btn secondary" data-tab="exercises">Übungen</button><button class="btn secondary" data-tab="recovery">Recovery</button><button class="btn secondary" data-tab="garmin">Garmin</button><button class="btn secondary" data-tab="profile">Profil</button></div></div>
 <div class="card"><div class="eyebrow">Recovery</div><div id="recoverySummary" class="notice">Noch kein Recovery-Check gespeichert.</div></div>
@@ -67,13 +67,12 @@ nav{position:fixed;left:0;right:0;bottom:0;background:rgba(8,10,12,.98);border-t
 <script>
 (function(){
 'use strict';
-var KEY='pacecoach_v2_logs',PROFILE='pacecoach_v2_profile',OLD=['pacecoach01_logs','pacecoach_logs','pacecoach01_data','pacecoach_data','pacecoach01_training'];
+var KEY='pacecoach_v3_logs',PROFILE='pacecoach_v2_profile';
 var $=function(id){return document.getElementById(id)};
 function safeParse(v,f){try{return JSON.parse(v)}catch(e){return f}}
 function read(k,f){var v=localStorage.getItem(k);if(v===null)return f;return safeParse(v,f)}
 function write(k,v){try{localStorage.setItem(k,JSON.stringify(v));localStorage.setItem(k+'_backup',JSON.stringify(v));return true}catch(e){return false}}
 function migrate(){if(localStorage.getItem(KEY))return;for(var i=0;i<OLD.length;i++){var x=safeParse(localStorage.getItem(OLD[i]),null);if(Array.isArray(x)&&x.length){write(KEY,x);return}}}
-migrate();
 function logs(){return read(KEY,[])}
 function profile(){return read(PROFILE,{pb1500:'4:09',pb3000:'8:47',pb5k:'15:08',pb10k:'30:58',pbHm:'68:54',pbMarathon:'2:28:56',status:'fit'})}
 function add(x){var a=logs();a.unshift(x);return write(KEY,a.slice(0,500))}
