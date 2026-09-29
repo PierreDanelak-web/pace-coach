@@ -1,0 +1,10 @@
+{
+  "name": "PACE//COACH",
+  "short_name": "PACE//COACH",
+  "start_url": "./?app=1",
+  "display": "standalone",
+  "background_color": "#080a0c",
+  "theme_color": "#090b0d",
+  "description": "Adaptive training coach for runners",
+  "icons": []
+}
