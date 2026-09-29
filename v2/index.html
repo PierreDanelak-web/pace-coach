@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#090b0d">
+<title>PACE//COACH V2</title>
+<style>
+:root{--bg:#090b0d;--card:#12161a;--line:#242a30;--text:#f4f6f7;--muted:#9da6ae;--accent:#b7ff3c}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",Arial,sans-serif}
+body{min-height:100vh}main{max-width:620px;margin:auto;padding:20px 16px calc(92px + env(safe-area-inset-bottom))}
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}.logo{font-weight:900;letter-spacing:.08em}.version{font-size:11px;background:var(--accent);color:#111;padding:6px 9px;border-radius:999px;font-weight:900}
+section{display:none}section.active{display:block}.eyebrow{font-size:11px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase;font-weight:800}h1{font-size:32px;margin:6px 0 18px}.muted{color:var(--muted)}.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin:12px 0}.hero{border-color:#394228}
+.workout{font-size:23px;font-weight:850;margin:7px 0 10px}.row{display:flex;gap:10px;flex-wrap:wrap}.metric{flex:1;min-width:95px;background:#0e1215;border-radius:13px;padding:12px}.metric b{display:block;font-size:21px;margin-top:3px}
+button,.btn{font:inherit;cursor:pointer}.btn{border:0;border-radius:12px;padding:12px 14px;background:var(--accent);color:#10130d;font-weight:850}.btn.secondary{background:#20262b;color:var(--text)}
+input,textarea,select{width:100%;background:#0d1114;color:var(--text);border:1px solid var(--line);border-radius:11px;padding:12px;margin:5px 0 12px;font-size:16px}label{font-size:12px;color:var(--muted)}
+nav{position:fixed;left:0;right:0;bottom:0;background:rgba(9,11,13,.98);border-top:1px solid var(--line);display:flex;z-index:9999;padding-bottom:env(safe-area-inset-bottom);isolation:isolate}nav button{flex:1;min-width:0;border:0;background:none;color:var(--muted);padding:12px 3px;font-size:11px;font-weight:800;touch-action:manipulation}nav button.active{color:var(--accent)}
+.notice{padding:12px;border-radius:12px;background:#0d1114;border:1px solid var(--line);font-size:13px;line-height:1.45}.empty{color:var(--muted);font-size:14px}.logitem{border-top:1px solid var(--line);padding:12px 0}.logitem:first-child{border-top:0}.danger{color:#ff8f8f}
+</style>
+</head>
+<body>
+<main>
+<header><div class="logo">PACE//COACH</div><div class="version">V2 BASE</div></header>
+
+<section id="home" class="active">
+<div class="eyebrow">Dashboard</div><h1>Dein Training</h1>
+<div class="card hero"><div class="eyebrow">Heute</div><div class="workout">Bereit für deinen nächsten Schritt.</div><p class="muted">Diese Version ist bewusst klein und stabil. Alle weiteren Coach-Funktionen bauen wir darauf auf.</p><div class="row"><button class="btn" data-go="log">+ Training eintragen</button><button class="btn secondary" data-go="week">Wochenplan</button></div></div>
+<div class="row"><div class="metric"><span class="muted">7-Tage-Lauf-km</span><b id="homeKm">0.0</b></div><div class="metric"><span class="muted">Einheiten</span><b id="homeSessions">0</b></div><div class="metric"><span class="muted">Ø RPE</span><b id="homeRpe">–</b></div></div>
+<div class="card"><div class="eyebrow">System</div><p class="notice">Basisstatus: <b id="systemStatus">bereit</b><br>Lokale Speicherung: <b id="storageStatus">bereit</b></p></div>
+</section>
+
+<section id="week"><div class="eyebrow">Plan</div><h1>Diese Woche</h1>
+<div class="card"><div class="eyebrow">Wochenstruktur</div>
+<div class="logitem"><b>Montag</b><br><span class="muted">Easy / Recovery</span></div>
+<div class="logitem"><b>Dienstag</b><br><span class="muted">Quality · kontrollierter Reiz</span></div>
+<div class="logitem"><b>Mittwoch</b><br><span class="muted">Easy + Kraft</span></div>
+<div class="logitem"><b>Donnerstag</b><br><span class="muted">Schwelle</span></div>
+<div class="logitem"><b>Freitag</b><br><span class="muted">Recovery / Ruhetag</span></div>
+<div class="logitem"><b>Samstag</b><br><span class="muted">Long Run</span></div>
+<div class="logitem"><b>Sonntag</b><br><span class="muted">Athletics + Mobility</span></div>
+</div></section>
+
+<section id="log"><div class="eyebrow">Training</div><h1>Training eintragen</h1>
+<div class="card"><div class="eyebrow">Lauftraining</div>
+<label>Art</label><select id="runType"><option>Laufen</option><option>Intervall</option><option>Long Run</option><option>Regeneration</option><option>Tempolauf</option><option>Schwelle</option><option>Wettkampf</option></select>
+<label>Distanz · km</label><input id="runDist" type="number" step="0.1" inputmode="decimal" placeholder="z. B. 10.5">
+<label>Dauer · Minuten</label><input id="runDur" type="number" step="1" inputmode="decimal" placeholder="z. B. 50">
+<label>RPE · 1–10</label><input id="runRpe" type="number" min="1" max="10" step="1" inputmode="numeric" placeholder="z. B. 5">
+<label>Notiz</label><textarea id="runNote" rows="2" placeholder="Gefühl, Beine, Besonderheiten …"></textarea>
+<button class="btn" id="saveRun">Lauftraining speichern</button></div>
+<div class="card"><div class="eyebrow">Krafttraining</div>
+<label>Dauer · Minuten</label><input id="strengthDur" type="number" step="1" placeholder="z. B. 45">
+<label>RPE · 1–10</label><input id="strengthRpe" type="number" min="1" max="10" step="1" placeholder="z. B. 6">
+<label>Inhalt</label><textarea id="strengthContent" rows="2" placeholder="z. B. Kniebeuge 4×6 · RDL 3×8"></textarea>
+<button class="btn secondary" id="saveStrength">Krafttraining speichern</button></div>
+<div class="card"><div class="eyebrow">Recovery</div>
+<label>Schlaf · 0–100</label><input id="sleep" type="number" min="0" max="100" placeholder="80">
+<label>Stress · 0–100</label><input id="stress" type="number" min="0" max="100" placeholder="30">
+<label>Body Battery · 0–100</label><input id="battery" type="number" min="0" max="100" placeholder="75">
+<button class="btn secondary" id="saveRecovery">Recovery speichern</button></div>
+<div class="card"><div class="eyebrow">Letzte Einträge</div><div id="logList" class="empty">Noch keine Einträge.</div></div>
+</section>
+
+<section id="analysis"><div class="eyebrow">Analyse</div><h1>Dein Verlauf</h1>
+<div class="row"><div class="metric"><span class="muted">Lauf-km</span><b id="aKm">0.0</b></div><div class="metric"><span class="muted">Läufe</span><b id="aRuns">0</b></div></div>
+<div class="row"><div class="metric"><span class="muted">Kraft</span><b id="aStrength">0</b></div><div class="metric"><span class="muted">Recovery</span><b id="aRecovery">0</b></div></div>
+<div class="card"><p id="analysisText" class="muted">Noch keine Trainingsdaten vorhanden.</p></div></section>
+
+<section id="profile"><div class="eyebrow">Athlet</div><h1>Profil</h1>
+<div class="card"><p class="muted">Deine Leistungsdaten bleiben die Grundlage für den späteren KI-Coach.</p>
+<label>1500 m</label><input id="pb1500" placeholder="4:09">
+<label>3000 m</label><input id="pb3000" placeholder="8:47">
+<label>5 km</label><input id="pb5k" placeholder="15:08">
+<label>10 km</label><input id="pb10k" placeholder="30:58">
+<label>Halbmarathon</label><input id="pbHm" placeholder="68:54">
+<label>Marathon</label><input id="pbMarathon" placeholder="2:28:56">
+<button class="btn" id="saveProfile">Profil speichern</button></div>
+</section>
+</main>
+
+<nav id="nav">
+<button type="button" class="active" data-tab="home">Heute</button>
+<button type="button" data-tab="week">Woche</button>
+<button type="button" data-tab="log">Training</button>
+<button type="button" data-tab="analysis">Analyse</button>
+<button type="button" data-tab="profile">Profil</button>
+</nav>
+
+<script>
+(function(){
+'use strict';
+var KEY='pacecoach_v2_logs', PROFILE='pacecoach_v2_profile';
+var $=function(id){return document.getElementById(id)};
+function read(key,fallback){try{return JSON.parse(localStorage.getItem(key)||JSON.stringify(fallback))}catch(e){return fallback}}
+function write(key,value){try{localStorage.setItem(key,JSON.stringify(value));return true}catch(e){return false}}
+function logs(){return read(KEY,[])}
+function saveLog(entry){var l=logs();l.unshift(entry);if(l.length>200)l=l.slice(0,200);return write(KEY,l)}
+function show(id){
+ var target=$(id);if(!target)return;
+ document.querySelectorAll('main section').forEach(function(s){s.classList.remove('active')});
+ target.classList.add('active');
+ document.querySelectorAll('#nav [data-tab]').forEach(function(b){b.classList.toggle('active',b.dataset.tab===id)});
+ window.scrollTo(0,0);render();
+}
+document.addEventListener('click',function(e){
+ var b=e.target.closest('[data-tab],[data-go]');if(!b)return;
+ e.preventDefault();show(b.dataset.tab||b.dataset.go);
+});
+function render(){
+ var l=logs(),runs=l.filter(function(x){return x.kind==='run'}),strength=l.filter(function(x){return x.kind==='strength'}),rec=l.filter(function(x){return x.kind==='recovery'});
+ var now=Date.now(),week=l.filter(function(x){return now-new Date(x.date).getTime()<=7*86400000});
+ var km=week.reduce(function(s,x){return s+(x.kind==='run'?Number(x.dist)||0:0)},0);
+ var rp=week.filter(function(x){return x.kind==='run'&&x.rpe}).map(function(x){return Number(x.rpe)}),avg=rp.length?(rp.reduce(function(a,b){return a+b},0)/rp.length).toFixed(1):'–';
+ $('homeKm').textContent=km.toFixed(1);$('homeSessions').textContent=week.length;$('homeRpe').textContent=avg;
+ $('aKm').textContent=runs.reduce(function(s,x){return s+(Number(x.dist)||0)},0).toFixed(1);$('aRuns').textContent=runs.length;$('aStrength').textContent=strength.length;$('aRecovery').textContent=rec.length;
+ $('analysisText').textContent=l.length?'PACE//COACH hat '+l.length+' Einträge gespeichert.':'Noch keine Trainingsdaten vorhanden.';
+ $('logList').innerHTML=l.slice(0,8).map(function(x){return '<div class="logitem"><b>'+esc(x.type)+'</b><br><span class="muted">'+new Date(x.date).toLocaleString('de-DE')+(x.dist?' · '+esc(String(x.dist))+' km':'')+(x.dur?' · '+esc(String(x.dur))+' min':'')+(x.rpe?' · RPE '+esc(String(x.rpe)):'')+'</span>'+(x.note?'<br><span class="muted">'+esc(x.note)+'</span>':'')+'</div>'}).join('')||'<span class="empty">Noch keine Einträge.</span>';
+ var p=read(PROFILE,null);if(p){['pb1500','pb3000','pb5k','pb10k','pbHm','pbMarathon'].forEach(function(k){if($(k)&&p[k])$(k).value=p[k]})}
+}
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+$('saveRun').addEventListener('click',function(){
+ var d=Number($('runDist').value)||0,t=Number($('runDur').value)||0,r=Number($('runRpe').value)||0;
+ if(!d&&!t){alert('Bitte Distanz oder Dauer eingeben.');return}
+ if(!saveLog({date:new Date().toISOString(),kind:'run',type:$('runType').value,dist:d,dur:t,rpe:r,note:$('runNote').value.trim()})){alert('Speichern im Browser nicht möglich.');return}
+ $('runDist').value='';$('runDur').value='';$('runRpe').value='';$('runNote').value='';render();alert('Lauftraining gespeichert.');
+});
+$('saveStrength').addEventListener('click',function(){
+ var t=Number($('strengthDur').value)||0;if(!t){alert('Bitte Dauer eingeben.');return}
+ if(!saveLog({date:new Date().toISOString(),kind:'strength',type:'Krafttraining',dur:t,rpe:Number($('strengthRpe').value)||0,note:$('strengthContent').value.trim()})){alert('Speichern im Browser nicht möglich.');return}
+ $('strengthDur').value='';$('strengthRpe').value='';$('strengthContent').value='';render();alert('Krafttraining gespeichert.');
+});
+$('saveRecovery').addEventListener('click',function(){
+ if(!saveLog({date:new Date().toISOString(),kind:'recovery',type:'Recovery',sleep:Number($('sleep').value)||0,stress:Number($('stress').value)||0,battery:Number($('battery').value)||0})){alert('Speichern im Browser nicht möglich.');return}
+ $('sleep').value='';$('stress').value='';$('battery').value='';render();alert('Recovery gespeichert.');
+});
+$('saveProfile').addEventListener('click',function(){
+ var p={pb1500:$('pb1500').value.trim(),pb3000:$('pb3000').value.trim(),pb5k:$('pb5k').value.trim(),pb10k:$('pb10k').value.trim(),pbHm:$('pbHm').value.trim(),pbMarathon:$('pbMarathon').value.trim()};
+ if(!write(PROFILE,p)){alert('Profil konnte nicht gespeichert werden.');return}alert('Profil gespeichert.');
+});
+render();
+})();
+</script>
+</body></html>
