@@ -156,7 +156,7 @@ function adaptiveSessionPrescription(base,prev,rec){
  }
  return null;
 }
-function dailyWorkoutDecision(){
+function dailyWorkoutDecisionBase(){
  const base=planDayData(todayPlanIndex())||{title:'Individuelle Einheit',pace:'Nach Tagesgefühl',desc:'Belastung kontrolliert und individuell verträglich durchführen.',effect:'Belastung steuern und Reaktion beobachten.',alt:''};
  const rec=recoveryState(),prev=previousCompletion();
  const title=(base.title||'').toLowerCase(),quality=/(quality|threshold|schwelle|intervall|tempo|wettkampf)/.test(title);
@@ -395,6 +395,23 @@ function renderPlan(){
  const state=weekAdaptiveState();
  const coachNote=state.highReaction?'Die letzte abgeschlossene Einheit war höher belastend als geplant. PACE//COACH prüft deshalb alle noch kommenden Tage neu.':state.lowRecovery?'Recovery ist niedrig. Kommende Qualitätsreize werden automatisch reduziert oder verschoben.':state.moderateRecovery?'Recovery ist mittel. Kommende Qualitätsreize werden mit reduziertem Umfang geprüft.':state.load7>600?'Die 7-Tage-Belastung ist erhöht. Der Coach hält die restliche Woche kontrolliert.':'Nach jeder abgeschlossenen Einheit wird die restliche Woche neu bewertet.';
  box.innerHTML='<div class="eyebrow">Wochensteuerung</div><p class="muted small">'+coachNote+'</p>'+plan.days.map((d,i)=>{const data=planDayData(i),canAlt=alternativeAllowed(data),status=data.adapted?'<span class="plan-status">Coach angepasst</span>':((i===1&&recoveryState()?.low)?'<span class="plan-status">Recovery reduziert</span>':'');return '<div class="day"><b>'+data.title+'</b>'+status+'<div class="plan-meta"><span class="muted"><b>Belastungsbereich</b><br>'+data.pace+'</span></div>'+(data.adaptation?'<p class="muted small">'+data.adaptation+'</p>':'')+'<div class="day-actions"><details class="plan-details"><summary class="btn secondary">Details</summary><div class="plan-detail-body"><b>Durchführung</b><br>'+data.desc+'<br><br><b>Primärer Trainingsreiz</b><br>'+data.effect+'</div></details>'+(canAlt?'<details class="plan-alt"><summary>'+alternativeLabel(data)+'</summary><div class="plan-alt-body"><span class="plan-chip">Wenn heute nicht gelaufen wird</span><br><strong>'+data.alt+'</strong><br><span class="muted small">Das ist eine vollständige Ausweich-Einheit und ersetzt die geplante Laufeinheit – nicht zusätzlich absolvieren. Intensität, Widerstand und Dauer sind bewusst vorgegeben. Nur wählen, wenn die Belastung individuell freigegeben und verträglich ist.</span></div></details>':'')+'</div></div>'}).join('')
+}
+function recoveryIntegratedDecision(base){
+ const ctx=recoveryToolContext();
+ if(!base)return base;
+ if(ctx.muscular){
+   base.desc=(base.desc||'')+' Danach: Massage Gun 2–4 min gezielt an der eingetragenen verspannten Muskelregion, niedrige bis mittlere Intensität. Nicht auf Knochen, Gelenke, Sehnenansätze oder akut schmerzhafte Stellen.';
+   base.effect=(base.effect||'')+' Recovery-Tool: Muskelspannung gezielt reduzieren und die Reaktion für die nächste Einheit beobachten.';
+   base.recoveryTool='Massage Gun · aktiviert';
+ }else{
+   base.desc=(base.desc||'')+' Optional am Abend: Infrarotkabine 15–25 min bei angenehmer, moderater Wärme, danach trinken und 5–10 min ruhig ausklingen lassen.';
+   base.effect=(base.effect||'')+' Optional: Infrarotkabine als eigenständige Recovery-Maßnahme, nicht als Ersatz für notwendige Ruhe.';
+   base.recoveryTool='Infrarotkabine · optional';
+ }
+ return base;
+}
+function dailyWorkoutDecision(...args){
+ return recoveryIntegratedDecision(dailyWorkoutDecisionBase(...args));
 }
 function recoveryToolContext(){
  const recent=logs().filter(e=>Date.now()-new Date(e.date).getTime()<=14*86400000);
