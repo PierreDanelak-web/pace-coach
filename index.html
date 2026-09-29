@@ -88,6 +88,16 @@ nav{position:fixed;left:0;right:0;bottom:0;background:rgba(9,11,13,.98);border-t
 
 <script>
 (function(){
+try{
+ if('serviceWorker' in navigator){
+  navigator.serviceWorker.getRegistrations().then(function(rs){return Promise.all(rs.map(function(r){return r.unregister()}))});
+ }
+ if(window.caches){caches.keys().then(function(ks){ks.forEach(function(k){caches.delete(k)})});}
+}catch(e){}
+})();
+</script>
+<script>
+(function(){
 'use strict';
 var KEY='pacecoach_v2_logs', PROFILE='pacecoach_v2_profile';
 var $=function(id){return document.getElementById(id)};
