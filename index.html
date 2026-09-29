@@ -1,152 +1,99 @@
 <!doctype html>
 <html lang="de">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#090b0d">
-<title>PACE//COACH V2</title>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#090b0d"><title>PACE//COACH</title>
 <style>
-:root{--bg:#090b0d;--card:#12161a;--line:#242a30;--text:#f4f6f7;--muted:#9da6ae;--accent:#b7ff3c}
-*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",Arial,sans-serif}
-body{min-height:100vh}main{max-width:620px;margin:auto;padding:20px 16px calc(92px + env(safe-area-inset-bottom))}
-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}.logo{font-weight:900;letter-spacing:.08em}.version{font-size:11px;background:var(--accent);color:#111;padding:6px 9px;border-radius:999px;font-weight:900}
-section{display:none}section.active{display:block}.eyebrow{font-size:11px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase;font-weight:800}h1{font-size:32px;margin:6px 0 18px}.muted{color:var(--muted)}.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin:12px 0}.hero{border-color:#394228}
-.workout{font-size:23px;font-weight:850;margin:7px 0 10px}.row{display:flex;gap:10px;flex-wrap:wrap}.metric{flex:1;min-width:95px;background:#0e1215;border-radius:13px;padding:12px}.metric b{display:block;font-size:21px;margin-top:3px}
-button,.btn{font:inherit;cursor:pointer}.btn{border:0;border-radius:12px;padding:12px 14px;background:var(--accent);color:#10130d;font-weight:850}.btn.secondary{background:#20262b;color:var(--text)}
-input,textarea,select{width:100%;background:#0d1114;color:var(--text);border:1px solid var(--line);border-radius:11px;padding:12px;margin:5px 0 12px;font-size:16px}label{font-size:12px;color:var(--muted)}
-nav{position:fixed;left:0;right:0;bottom:0;background:rgba(9,11,13,.98);border-top:1px solid var(--line);display:flex;z-index:9999;padding-bottom:env(safe-area-inset-bottom);isolation:isolate}nav button{flex:1;min-width:0;border:0;background:none;color:var(--muted);padding:12px 3px;font-size:11px;font-weight:800;touch-action:manipulation}nav button.active{color:var(--accent)}
-.notice{padding:12px;border-radius:12px;background:#0d1114;border:1px solid var(--line);font-size:13px;line-height:1.45}.empty{color:var(--muted);font-size:14px}.logitem{border-top:1px solid var(--line);padding:12px 0}.logitem:first-child{border-top:0}.danger{color:#ff8f8f}
+:root{--bg:#080a0c;--card:#12161a;--card2:#0d1114;--line:#252c32;--text:#f5f7f8;--muted:#9da6ae;--accent:#b8ff38;--warn:#ffd166;--danger:#ff7777}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",Arial,sans-serif}body{min-height:100vh}
+main{max-width:680px;margin:auto;padding:18px 15px calc(100px + env(safe-area-inset-bottom))}header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}.logo{font-weight:950;letter-spacing:.08em}.pill{font-size:10px;background:var(--accent);color:#111;padding:6px 9px;border-radius:999px;font-weight:900}
+section{display:none}section.active{display:block}.eyebrow{font-size:10px;text-transform:uppercase;letter-spacing:.13em;color:var(--muted);font-weight:850}h1{font-size:32px;line-height:1.05;margin:6px 0 18px}h2{font-size:20px;margin:4px 0 10px}.muted{color:var(--muted)}.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin:12px 0}.hero{border-color:#46522c}.workout{font-size:23px;font-weight:900;margin:7px 0}.row{display:flex;gap:10px;flex-wrap:wrap}.metric{flex:1;min-width:105px;background:var(--card2);border-radius:13px;padding:12px}.metric span{font-size:11px;color:var(--muted)}.metric b{display:block;font-size:21px;margin-top:4px}
+button,.btn{font:inherit;cursor:pointer;touch-action:manipulation}.btn{border:0;border-radius:12px;padding:12px 14px;background:var(--accent);color:#10130d;font-weight:900}.btn.secondary{background:#22282d;color:var(--text)}.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--text)}
+input,textarea,select{width:100%;background:#0c1013;color:var(--text);border:1px solid var(--line);border-radius:11px;padding:12px;margin:5px 0 12px;font-size:16px}label{font-size:12px;color:var(--muted)}textarea{resize:vertical}
+nav{position:fixed;left:0;right:0;bottom:0;background:rgba(8,10,12,.98);border-top:1px solid var(--line);display:flex;z-index:9999;padding-bottom:env(safe-area-inset-bottom)}nav button{flex:1;border:0;background:none;color:var(--muted);padding:11px 2px;font-size:10px;font-weight:850}nav button.active{color:var(--accent)}
+.tag{display:inline-block;padding:5px 8px;border-radius:8px;background:#20262a;color:var(--muted);font-size:11px;font-weight:800}.tag.good{color:var(--accent)}.tag.warn{color:var(--warn)}.exercise{border-top:1px solid var(--line);padding:13px 0}.exercise:first-child{border-top:0}.exercise b{font-size:16px}.exercise p{margin:6px 0;font-size:13px;line-height:1.45}.step{padding:9px 0;border-top:1px solid var(--line);font-size:13px}.step:first-child{border-top:0}.notice{background:var(--card2);border:1px solid var(--line);padding:12px;border-radius:12px;font-size:13px;line-height:1.45}.danger{color:var(--danger)}.empty{color:var(--muted);font-size:13px}.listitem{border-top:1px solid var(--line);padding:12px 0}.listitem:first-child{border-top:0}.day{display:flex;justify-content:space-between;gap:12px;align-items:center}.day b{font-size:14px}.day .desc{font-size:12px;color:var(--muted);margin-top:3px}.check{font-size:18px}.small{font-size:12px}
 </style>
 </head>
 <body>
 <main>
-<header><div class="logo">PACE//COACH</div><div class="version">V2 BASE</div></header>
+<header><div class="logo">PACE//COACH</div><div class="pill">ATHLETE OS · V2</div></header>
 
 <section id="home" class="active">
-<div class="eyebrow">Dashboard</div><h1>Dein Training</h1>
-<div class="card hero"><div class="eyebrow">Heute</div><div class="workout">Bereit für deinen nächsten Schritt.</div><p class="muted">Diese Version ist bewusst klein und stabil. Alle weiteren Coach-Funktionen bauen wir darauf auf.</p><div class="row"><button class="btn" data-go="log">+ Training eintragen</button><button class="btn secondary" data-go="week">Wochenplan</button></div></div>
-<div class="row"><div class="metric"><span class="muted">7-Tage-Lauf-km</span><b id="homeKm">0.0</b></div><div class="metric"><span class="muted">Einheiten</span><b id="homeSessions">0</b></div><div class="metric"><span class="muted">Ø RPE</span><b id="homeRpe">–</b></div></div>
-<div class="card"><div class="eyebrow">System</div><p class="notice">Basisstatus: <b id="systemStatus">bereit</b><br>Lokale Speicherung: <b id="storageStatus">bereit</b></p></div>
+<div class="eyebrow">Dashboard</div><h1>Heute</h1>
+<div class="card hero"><div class="eyebrow">KI-Coach</div><div id="todayTitle" class="workout">Deine Einheit wird berechnet …</div><p id="todayReason" class="muted"></p><div class="row"><button class="btn" data-tab="coach">Coach öffnen</button><button class="btn secondary" data-tab="log">Training eintragen</button></div></div>
+<div class="row"><div class="metric"><span>7 Tage · Lauf-km</span><b id="homeKm">0.0</b></div><div class="metric"><span>7 Tage · Einheiten</span><b id="homeSessions">0</b></div><div class="metric"><span>Ø RPE</span><b id="homeRpe">–</b></div></div>
+<div class="card"><div class="eyebrow">Belastung</div><div class="row"><div class="metric"><span>Load 7T</span><b id="load7">0</b></div><div class="metric"><span>Load 28T</span><b id="load28">0</b></div><div class="metric"><span>Trend</span><b id="trend">–</b></div></div></div>
+<div class="card"><div class="eyebrow">Recovery</div><div id="recoverySummary" class="notice">Noch kein Recovery-Check gespeichert.</div></div>
 </section>
 
-<section id="week"><div class="eyebrow">Plan</div><h1>Diese Woche</h1>
-<div class="card"><div class="eyebrow">Wochenstruktur</div>
-<div class="logitem"><b>Montag</b><br><span class="muted">Easy / Recovery</span></div>
-<div class="logitem"><b>Dienstag</b><br><span class="muted">Quality · kontrollierter Reiz</span></div>
-<div class="logitem"><b>Mittwoch</b><br><span class="muted">Easy + Kraft</span></div>
-<div class="logitem"><b>Donnerstag</b><br><span class="muted">Schwelle</span></div>
-<div class="logitem"><b>Freitag</b><br><span class="muted">Recovery / Ruhetag</span></div>
-<div class="logitem"><b>Samstag</b><br><span class="muted">Long Run</span></div>
-<div class="logitem"><b>Sonntag</b><br><span class="muted">Athletics + Mobility</span></div>
-</div></section>
+<section id="week"><div class="eyebrow">Adaptive Planung</div><h1>Meine Woche</h1><div class="card"><div id="weekPlan"></div></div><div class="card"><div class="eyebrow">Warum diese Woche?</div><p id="weekWhy" class="muted"></p></div></section>
 
-<section id="log"><div class="eyebrow">Training</div><h1>Training eintragen</h1>
-<div class="card"><div class="eyebrow">Lauftraining</div>
-<label>Art</label><select id="runType"><option>Laufen</option><option>Intervall</option><option>Long Run</option><option>Regeneration</option><option>Tempolauf</option><option>Schwelle</option><option>Wettkampf</option></select>
-<label>Distanz · km</label><input id="runDist" type="number" step="0.1" inputmode="decimal" placeholder="z. B. 10.5">
-<label>Dauer · Minuten</label><input id="runDur" type="number" step="1" inputmode="decimal" placeholder="z. B. 50">
-<label>RPE · 1–10</label><input id="runRpe" type="number" min="1" max="10" step="1" inputmode="numeric" placeholder="z. B. 5">
-<label>Notiz</label><textarea id="runNote" rows="2" placeholder="Gefühl, Beine, Besonderheiten …"></textarea>
-<button class="btn" id="saveRun">Lauftraining speichern</button></div>
-<div class="card"><div class="eyebrow">Krafttraining</div>
-<label>Dauer · Minuten</label><input id="strengthDur" type="number" step="1" placeholder="z. B. 45">
-<label>RPE · 1–10</label><input id="strengthRpe" type="number" min="1" max="10" step="1" placeholder="z. B. 6">
-<label>Inhalt</label><textarea id="strengthContent" rows="2" placeholder="z. B. Kniebeuge 4×6 · RDL 3×8"></textarea>
-<button class="btn secondary" id="saveStrength">Krafttraining speichern</button></div>
-<div class="card"><div class="eyebrow">Recovery</div>
-<label>Schlaf · 0–100</label><input id="sleep" type="number" min="0" max="100" placeholder="80">
-<label>Stress · 0–100</label><input id="stress" type="number" min="0" max="100" placeholder="30">
-<label>Body Battery · 0–100</label><input id="battery" type="number" min="0" max="100" placeholder="75">
-<button class="btn secondary" id="saveRecovery">Recovery speichern</button></div>
-<div class="card"><div class="eyebrow">Letzte Einträge</div><div id="logList" class="empty">Noch keine Einträge.</div></div>
+<section id="coach"><div class="eyebrow">PACE//COACH</div><h1>Dein Coach</h1><div class="card hero"><div id="coachHeadline" class="workout"></div><p id="coachText" class="muted"></p></div>
+<div class="card"><div class="eyebrow">Direkte Umsetzung</div><div id="coachActions"></div></div>
+<div class="card"><div class="eyebrow">Coach-Logik</div><div class="step">1 · Trainingslast aus deinen Einheiten</div><div class="step">2 · Recovery und RPE berücksichtigen</div><div class="step">3 · Wochenstruktur anpassen</div><div class="step">4 · konkrete Einheit + Alternativen ausgeben</div></div>
 </section>
 
-<section id="analysis"><div class="eyebrow">Analyse</div><h1>Dein Verlauf</h1>
-<div class="row"><div class="metric"><span class="muted">Lauf-km</span><b id="aKm">0.0</b></div><div class="metric"><span class="muted">Läufe</span><b id="aRuns">0</b></div></div>
-<div class="row"><div class="metric"><span class="muted">Kraft</span><b id="aStrength">0</b></div><div class="metric"><span class="muted">Recovery</span><b id="aRecovery">0</b></div></div>
-<div class="card"><p id="analysisText" class="muted">Noch keine Trainingsdaten vorhanden.</p></div></section>
-
-<section id="profile"><div class="eyebrow">Athlet</div><h1>Profil</h1>
-<div class="card"><p class="muted">Deine Leistungsdaten bleiben die Grundlage für den späteren KI-Coach.</p>
-<label>1500 m</label><input id="pb1500" placeholder="4:09">
-<label>3000 m</label><input id="pb3000" placeholder="8:47">
-<label>5 km</label><input id="pb5k" placeholder="15:08">
-<label>10 km</label><input id="pb10k" placeholder="30:58">
-<label>Halbmarathon</label><input id="pbHm" placeholder="68:54">
-<label>Marathon</label><input id="pbMarathon" placeholder="2:28:56">
-<button class="btn" id="saveProfile">Profil speichern</button></div>
+<section id="log"><div class="eyebrow">Training</div><h1>Einheit erfassen</h1>
+<div class="card"><div class="eyebrow">Lauf</div><label>Art</label><select id="runType"><option>Easy Run</option><option>Intervall</option><option>Schwelle</option><option>Tempolauf</option><option>Long Run</option><option>Regeneration</option><option>Wettkampf</option></select><label>Distanz · km</label><input id="runDist" type="number" step=".1" inputmode="decimal"><label>Dauer · min</label><input id="runDur" type="number" step="1" inputmode="numeric"><label>RPE · 1–10</label><input id="runRpe" type="number" min="1" max="10" step="1"><label>Notiz</label><textarea id="runNote" rows="2"></textarea><button class="btn" id="saveRun">Lauf speichern</button></div>
+<div class="card"><div class="eyebrow">Kraft</div><label>Dauer · min</label><input id="strengthDur" type="number"><label>RPE · 1–10</label><input id="strengthRpe" type="number" min="1" max="10"><label>Inhalt</label><textarea id="strengthContent" rows="2"></textarea><button class="btn secondary" id="saveStrength">Kraft speichern</button></div>
+<div class="card"><div class="eyebrow">Recovery</div><label>Schlaf · 0–100</label><input id="sleep" type="number" min="0" max="100"><label>Stress · 0–100</label><input id="stress" type="number" min="0" max="100"><label>Body Battery · 0–100</label><input id="battery" type="number" min="0" max="100"><button class="btn secondary" id="saveRecovery">Recovery speichern</button></div>
+<div class="card"><div class="eyebrow">Letzte Einheiten</div><div id="logList" class="empty"></div></div>
 </section>
+
+<section id="analysis"><div class="eyebrow">Performance</div><h1>Analyse</h1><div class="row"><div class="metric"><span>30T Lauf-km</span><b id="aKm">0</b></div><div class="metric"><span>30T Läufe</span><b id="aRuns">0</b></div></div><div class="row"><div class="metric"><span>30T Load</span><b id="aLoad">0</b></div><div class="metric"><span>Ø RPE</span><b id="aRpe">–</b></div></div><div class="card"><div class="eyebrow">Trend</div><p id="analysisText" class="muted"></p></div><div class="card"><div class="eyebrow">Belastungsmodell</div><p class="muted small">Load = Dauer × RPE. Laufkilometer und Einheiten werden separat betrachtet. Der Coach nutzt diese Werte für die adaptive Wochensteuerung.</p></div></section>
+
+<section id="exercises"><div class="eyebrow">Coach Actions</div><h1>Übungen</h1><div class="card"><div class="eyebrow">Direkte Anleitung</div><p class="muted">Wähle eine Übung. Jede Karte enthält Zweck, Dosierung und eine kurze Ausführung.</p><div id="exerciseList"></div></div></section>
+
+<section id="recovery"><div class="eyebrow">Recovery</div><h1>Regeneration</h1><div class="card"><div class="eyebrow">Heute</div><div id="recoveryCoach"></div></div><div class="card"><div class="eyebrow">Tools</div><div class="exercise"><b>10 Minuten Mobility</b><p>Ruhige Gelenkbewegungen, keine aggressiven Endpositionen. Danach neu bewerten.</p></div><div class="exercise"><b>Infrared Recovery</b><p>Moderate Wärme als Entspannungsroutine. Hydration beachten und bei Unwohlsein abbrechen.</p></div><div class="exercise"><b>Massage / Faszien</b><p>Leicht bis moderat dosieren. Nicht direkt auf schmerzhafte oder akut verletzte Strukturen drücken.</p></div></div></section>
+
+<section id="garmin"><div class="eyebrow">Data Hub</div><h1>Garmin</h1><div class="card hero"><div class="workout">Garmin Bridge</div><p class="muted">Die App ist für Garmin-Aktivitätsdaten vorbereitet. Der direkte Account-Login benötigt eine externe OAuth-/Backend-Verbindung.</p><span class="tag warn">Connection layer ready · OAuth required</span></div>
+<div class="card"><div class="eyebrow">Aktivitätsdaten importieren</div><label>JSON aus einer Garmin-/Exportquelle</label><textarea id="garminJson" rows="6" placeholder='[{"date":"2026-09-29","kind":"run","dist":10,"dur":50,"rpe":5}]'></textarea><button class="btn" id="importGarmin">Importieren</button></div>
+<div class="card"><div class="eyebrow">Geplanter Datenfluss</div><div class="step">Garmin → OAuth/Connector</div><div class="step">Aktivität → normalisiertes PACE//COACH-Training</div><div class="step">Training → Load / Analyse</div><div class="step">Load + Recovery → Coach</div></div></section>
+
+<section id="profile"><div class="eyebrow">Athlet</div><h1>Profil</h1><div class="card"><label>1500 m</label><input id="pb1500"><label>3000 m</label><input id="pb3000"><label>5 km</label><input id="pb5k"><label>10 km</label><input id="pb10k"><label>Halbmarathon</label><input id="pbHm"><label>Marathon</label><input id="pbMarathon"><label>Status</label><select id="status"><option value="fit">Fit</option><option value="build">Aufbau</option><option value="reduced">Reduziert</option><option value="injury">Belastung reduzieren</option></select><button class="btn" id="saveProfile">Profil speichern</button></div>
+<div class="card"><div class="eyebrow">System</div><p class="notice">V2-Basis aktiv · lokale Datenhaltung aktiv · Module: Coach / Adaptive Week / Exercises / Recovery / Garmin Bridge.</p></div></section>
 </main>
-
 <nav id="nav">
-<button type="button" class="active" data-tab="home">Heute</button>
-<button type="button" data-tab="week">Woche</button>
-<button type="button" data-tab="log">Training</button>
-<button type="button" data-tab="analysis">Analyse</button>
-<button type="button" data-tab="profile">Profil</button>
+<button type="button" class="active" data-tab="home">Heute</button><button type="button" data-tab="week">Woche</button><button type="button" data-tab="coach">Coach</button><button type="button" data-tab="log">Training</button><button type="button" data-tab="analysis">Analyse</button>
 </nav>
-
-<script>
-(function(){
-try{
- if('serviceWorker' in navigator){
-  navigator.serviceWorker.getRegistrations().then(function(rs){return Promise.all(rs.map(function(r){return r.unregister()}))});
- }
- if(window.caches){caches.keys().then(function(ks){ks.forEach(function(k){caches.delete(k)})});}
-}catch(e){}
-})();
-</script>
 <script>
 (function(){
 'use strict';
-var KEY='pacecoach_v2_logs', PROFILE='pacecoach_v2_profile';
+var KEY='pacecoach_v2_logs',PROFILE='pacecoach_v2_profile',OLD=['pacecoach01_logs','pacecoach_logs','pacecoach01_data','pacecoach_data','pacecoach01_training'];
 var $=function(id){return document.getElementById(id)};
-function read(key,fallback){try{return JSON.parse(localStorage.getItem(key)||JSON.stringify(fallback))}catch(e){return fallback}}
-function write(key,value){try{localStorage.setItem(key,JSON.stringify(value));return true}catch(e){return false}}
+function safeParse(v,f){try{return JSON.parse(v)}catch(e){return f}}
+function read(k,f){var v=localStorage.getItem(k);if(v===null)return f;return safeParse(v,f)}
+function write(k,v){try{localStorage.setItem(k,JSON.stringify(v));localStorage.setItem(k+'_backup',JSON.stringify(v));return true}catch(e){return false}}
+function migrate(){if(localStorage.getItem(KEY))return;for(var i=0;i<OLD.length;i++){var x=safeParse(localStorage.getItem(OLD[i]),null);if(Array.isArray(x)&&x.length){write(KEY,x);return}}}
+migrate();
 function logs(){return read(KEY,[])}
-function saveLog(entry){var l=logs();l.unshift(entry);if(l.length>200)l=l.slice(0,200);return write(KEY,l)}
-function show(id){
- var target=$(id);if(!target)return;
- document.querySelectorAll('main section').forEach(function(s){s.classList.remove('active')});
- target.classList.add('active');
- document.querySelectorAll('#nav [data-tab]').forEach(function(b){b.classList.toggle('active',b.dataset.tab===id)});
- window.scrollTo(0,0);render();
-}
-document.addEventListener('click',function(e){
- var b=e.target.closest('[data-tab],[data-go]');if(!b)return;
- e.preventDefault();show(b.dataset.tab||b.dataset.go);
-});
-function render(){
- var l=logs(),runs=l.filter(function(x){return x.kind==='run'}),strength=l.filter(function(x){return x.kind==='strength'}),rec=l.filter(function(x){return x.kind==='recovery'});
- var now=Date.now(),week=l.filter(function(x){return now-new Date(x.date).getTime()<=7*86400000});
- var km=week.reduce(function(s,x){return s+(x.kind==='run'?Number(x.dist)||0:0)},0);
- var rp=week.filter(function(x){return x.kind==='run'&&x.rpe}).map(function(x){return Number(x.rpe)}),avg=rp.length?(rp.reduce(function(a,b){return a+b},0)/rp.length).toFixed(1):'–';
- $('homeKm').textContent=km.toFixed(1);$('homeSessions').textContent=week.length;$('homeRpe').textContent=avg;
- $('aKm').textContent=runs.reduce(function(s,x){return s+(Number(x.dist)||0)},0).toFixed(1);$('aRuns').textContent=runs.length;$('aStrength').textContent=strength.length;$('aRecovery').textContent=rec.length;
- $('analysisText').textContent=l.length?'PACE//COACH hat '+l.length+' Einträge gespeichert.':'Noch keine Trainingsdaten vorhanden.';
- $('logList').innerHTML=l.slice(0,8).map(function(x){return '<div class="logitem"><b>'+esc(x.type)+'</b><br><span class="muted">'+new Date(x.date).toLocaleString('de-DE')+(x.dist?' · '+esc(String(x.dist))+' km':'')+(x.dur?' · '+esc(String(x.dur))+' min':'')+(x.rpe?' · RPE '+esc(String(x.rpe)):'')+'</span>'+(x.note?'<br><span class="muted">'+esc(x.note)+'</span>':'')+'</div>'}).join('')||'<span class="empty">Noch keine Einträge.</span>';
- var p=read(PROFILE,null);if(p){['pb1500','pb3000','pb5k','pb10k','pbHm','pbMarathon'].forEach(function(k){if($(k)&&p[k])$(k).value=p[k]})}
-}
+function profile(){return read(PROFILE,{pb1500:'4:09',pb3000:'8:47',pb5k:'15:08',pb10k:'30:58',pbHm:'68:54',pbMarathon:'2:28:56',status:'fit'})}
+function add(x){var a=logs();a.unshift(x);return write(KEY,a.slice(0,500))}
+function daysAgo(x,d){return Date.now()-new Date(x.date).getTime()<=d*86400000}
+function loadFor(a){return (Number(a.dur)||0)*(Number(a.rpe)||0)}
+function stats(d){var a=logs().filter(function(x){return daysAgo(x,d)}),runs=a.filter(function(x){return x.kind==='run'}),rp=runs.filter(function(x){return x.rpe}).map(function(x){return Number(x.rpe)});return {all:a,runs:runs,km:runs.reduce(function(s,x){return s+(Number(x.dist)||0)},0),load:a.reduce(function(s,x){return s+loadFor(x)},0),rpe:rp.length?rp.reduce(function(s,x){return s+x},0)/rp.length:0}}
+function recovery(){var r=logs().find(function(x){return x.kind==='recovery'});return r||null}
+function recommendation(){var s=stats(7),r=recovery(),p=profile();if(p.status==='injury')return {title:'Belastung reduzieren',reason:'Profil ist auf Belastungsreduktion gestellt.'};if(r&&((r.sleep&&r.sleep<45)||(r.stress&&r.stress>75)||(r.battery&&r.battery<35)))return {title:'Easy / Recovery',reason:'Deine zuletzt gespeicherten Recovery-Werte sprechen für einen reduzierten Reiz.'};if(s.load>650||s.runs.some(function(x){return daysAgo(x,1)&&Number(x.rpe)>=8}))return {title:'Easy Run',reason:'Die letzte Woche bzw. die letzte harte Einheit liefert bereits einen deutlichen Belastungsreiz.'};var day=new Date().getDay();return [{title:'Easy Run',reason:'Aerobe Basis und lockere Bewegung.'},{title:'Quality Session',reason:'Heute ist ein geeigneter Tag für einen kontrollierten Qualitätsreiz.'},{title:'Easy + Kraft',reason:'Lockerer Lauf plus gezielte Athletik.'},{title:'Threshold',reason:'Kontrollierter Schwellenreiz.'},{title:'Recovery',reason:'Belastung bewusst niedrig halten.'},{title:'Long Run',reason:'Ausdauer und ökonomische Belastungsverträglichkeit.'},{title:'Athletics + Mobility',reason:'Stabilität, Beweglichkeit und Vorbereitung auf die nächste Woche.'}][day]}
+function plan(){var r=recommendation(),names=['Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag','Sonntag'],base=['Easy Run · 45–60 min','Quality · 5×1000 m kontrolliert','Easy · 45–60 min + Athletics','Threshold · 3×10 min','Recovery / Ruhetag','Long Run · 16–20 km','Athletics + Mobility'];var idx=(new Date().getDay()+6)%7;return names.map(function(n,i){var t=base[i];if(i===idx)t=r.title+' · angepasst';return {n:n,t:t,today:i===idx}})}
 function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
-$('saveRun').addEventListener('click',function(){
- var d=Number($('runDist').value)||0,t=Number($('runDur').value)||0,r=Number($('runRpe').value)||0;
- if(!d&&!t){alert('Bitte Distanz oder Dauer eingeben.');return}
- if(!saveLog({date:new Date().toISOString(),kind:'run',type:$('runType').value,dist:d,dur:t,rpe:r,note:$('runNote').value.trim()})){alert('Speichern im Browser nicht möglich.');return}
- $('runDist').value='';$('runDur').value='';$('runRpe').value='';$('runNote').value='';render();alert('Lauftraining gespeichert.');
-});
-$('saveStrength').addEventListener('click',function(){
- var t=Number($('strengthDur').value)||0;if(!t){alert('Bitte Dauer eingeben.');return}
- if(!saveLog({date:new Date().toISOString(),kind:'strength',type:'Krafttraining',dur:t,rpe:Number($('strengthRpe').value)||0,note:$('strengthContent').value.trim()})){alert('Speichern im Browser nicht möglich.');return}
- $('strengthDur').value='';$('strengthRpe').value='';$('strengthContent').value='';render();alert('Krafttraining gespeichert.');
-});
-$('saveRecovery').addEventListener('click',function(){
- if(!saveLog({date:new Date().toISOString(),kind:'recovery',type:'Recovery',sleep:Number($('sleep').value)||0,stress:Number($('stress').value)||0,battery:Number($('battery').value)||0})){alert('Speichern im Browser nicht möglich.');return}
- $('sleep').value='';$('stress').value='';$('battery').value='';render();alert('Recovery gespeichert.');
-});
-$('saveProfile').addEventListener('click',function(){
- var p={pb1500:$('pb1500').value.trim(),pb3000:$('pb3000').value.trim(),pb5k:$('pb5k').value.trim(),pb10k:$('pb10k').value.trim(),pbHm:$('pbHm').value.trim(),pbMarathon:$('pbMarathon').value.trim()};
- if(!write(PROFILE,p)){alert('Profil konnte nicht gespeichert werden.');return}alert('Profil gespeichert.');
-});
+function show(id){var s=$(id);if(!s)return;document.querySelectorAll('main section').forEach(function(x){x.classList.remove('active')});s.classList.add('active');document.querySelectorAll('#nav button').forEach(function(b){b.classList.toggle('active',b.dataset.tab===id)});window.scrollTo(0,0);render()}
+document.addEventListener('click',function(e){var b=e.target.closest('[data-tab]');if(b){e.preventDefault();show(b.dataset.tab)}});
+function render(){var s7=stats(7),s30=stats(30),r=recovery(),rec=recommendation(),p=profile();$('homeKm').textContent=s7.km.toFixed(1);$('homeSessions').textContent=s7.all.length;$('homeRpe').textContent=s7.rpe?s7.rpe.toFixed(1):'–';$('load7').textContent=Math.round(s7.load);$('load28').textContent=Math.round(stats(28).load);$('trend').textContent=s7.load>stats(28).load/4*1.25?'hoch':'stabil';$('todayTitle').textContent=rec.title;$('todayReason').textContent=rec.reason;
+$('recoverySummary').innerHTML=r?'Schlaf <b>'+Number(r.sleep||0)+'</b> · Stress <b>'+Number(r.stress||0)+'</b> · Battery <b>'+Number(r.battery||0)+'</b>':'Noch kein Recovery-Check gespeichert.';
+$('weekPlan').innerHTML=plan().map(function(d){return '<div class="listitem day"><div><b>'+d.n+'</b><div class="desc">'+d.t+'</div></div><span class="check">'+(d.today?'●':'○')+'</span></div>'}).join('');$('weekWhy').textContent=rec.reason;
+$('coachHeadline').textContent=rec.title;$('coachText').textContent='Dein Coach verbindet aktuelle Trainingslast, RPE, Recovery und Wochenstruktur. Die Entscheidung bleibt bei dir – die App liefert eine konkrete Empfehlung plus Alternativen.';$('coachActions').innerHTML='<div class="exercise"><b>Primär</b><p>'+esc(rec.title)+' · starte kontrolliert und bewerte nach dem Warm-up neu.</p><button class="btn" data-tab="log">Einheit starten</button></div><div class="exercise"><b>Alternative</b><p>30–45 min sehr locker oder 20–30 min Mobility + Athletics.</p><button class="btn secondary" data-tab="exercises">Übungen öffnen</button></div>';
+$('aKm').textContent=s30.km.toFixed(1);$('aRuns').textContent=s30.runs.length;$('aLoad').textContent=Math.round(s30.load);$('aRpe').textContent=s30.rpe?s30.rpe.toFixed(1):'–';$('analysisText').textContent=s30.all.length?'In den letzten 30 Tagen wurden '+s30.all.length+' Einheiten und '+s30.km.toFixed(1)+' Lauf-km gespeichert.':'Noch keine Trainingsdaten vorhanden.';
+$('logList').innerHTML=logs().slice(0,10).map(function(x){return '<div class="listitem"><b>'+esc(x.type||x.kind)+'</b><br><span class="muted small">'+new Date(x.date).toLocaleString('de-DE')+(x.dist?' · '+x.dist+' km':'')+(x.dur?' · '+x.dur+' min':'')+(x.rpe?' · RPE '+x.rpe:'')+'</span></div>'}).join('')||'<span class="empty">Noch keine Einträge.</span>';
+['pb1500','pb3000','pb5k','pb10k','pbHm','pbMarathon','status'].forEach(function(k){if($(k)&&p[k])$(k).value=p[k]});
+renderExercises();renderRecovery()}
+function renderExercises(){var ex=[['Wadenheben','Achilles-/Wadenkraft','3×12 langsam. Aufstieg kontrolliert, 2 Sekunden oben halten.'],['Single-Leg Balance','Fuß-/Sprunggelenkskontrolle','3×30–45 Sekunden je Seite. Becken ruhig halten.'],['Split Squat','Beinachsenkraft','3×8 je Seite. Knie folgt der Fußrichtung.'],['Romanian Deadlift','hintere Kette','3×8. Hüfte nach hinten, Rücken neutral.'],['Side Plank','Rumpf / Beckenstabilität','3×30 Sekunden je Seite. Schulter und Becken aktiv stabilisieren.'],['Hip Airplane','Hüftkontrolle','2×5 je Seite langsam und sauber.']];$('exerciseList').innerHTML=ex.map(function(e){return '<div class="exercise"><b>'+e[0]+'</b><span class="tag">'+e[1]+'</span><p>'+e[2]+'</p></div>'}).join('')}
+function renderRecovery(){var r=recovery(),el=$('recoveryCoach');if(!r){el.innerHTML='<p class="muted">Trage heute Schlaf, Stress und Body Battery ein, damit der Coach die Regeneration berücksichtigt.</p>';return}var score=(Number(r.sleep||0)+Number(r.battery||0)+(100-Number(r.stress||0)))/3;el.innerHTML='<div class="metric"><span>Recovery Score</span><b>'+Math.round(score)+'/100</b></div><p class="muted">'+(score>=70?'Gute Grundlage für einen normalen Trainingstag.':score>=50?'Heute eher kontrolliert trainieren.':'Regeneration priorisieren und Belastung reduzieren.')+'</p>'}
+$('saveRun').addEventListener('click',function(){var d=Number($('runDist').value)||0,t=Number($('runDur').value)||0,r=Number($('runRpe').value)||0;if(!d&&!t){alert('Distanz oder Dauer eingeben.');return}add({date:new Date().toISOString(),kind:'run',type:$('runType').value,dist:d,dur:t,rpe:r,note:$('runNote').value.trim()});['runDist','runDur','runRpe','runNote'].forEach(function(k){$(k).value=''});render();alert('Lauf gespeichert.')});
+$('saveStrength').addEventListener('click',function(){var t=Number($('strengthDur').value)||0;if(!t){alert('Dauer eingeben.');return}add({date:new Date().toISOString(),kind:'strength',type:'Krafttraining',dur:t,rpe:Number($('strengthRpe').value)||0,note:$('strengthContent').value.trim()});['strengthDur','strengthRpe','strengthContent'].forEach(function(k){$(k).value=''});render();alert('Kraft gespeichert.')});
+$('saveRecovery').addEventListener('click',function(){add({date:new Date().toISOString(),kind:'recovery',type:'Recovery',sleep:Number($('sleep').value)||0,stress:Number($('stress').value)||0,battery:Number($('battery').value)||0});['sleep','stress','battery'].forEach(function(k){$(k).value=''});render();alert('Recovery gespeichert.')});
+$('saveProfile').addEventListener('click',function(){var p={};['pb1500','pb3000','pb5k','pb10k','pbHm','pbMarathon','status'].forEach(function(k){p[k]=$(k).value.trim()});write(PROFILE,p);alert('Profil gespeichert.');render()});
+$('importGarmin').addEventListener('click',function(){var raw=$('garminJson').value.trim(),a=safeParse(raw,null);if(!Array.isArray(a)){alert('Bitte ein JSON-Array einfügen.');return}var ok=0;a.forEach(function(x){if(x.date&&(x.kind||x.type)){add({date:new Date(x.date).toISOString(),kind:x.kind||'run',type:x.type||'Garmin',dist:Number(x.dist)||0,dur:Number(x.dur)||0,rpe:Number(x.rpe)||0,note:x.note||'Garmin import'}) ;ok++}});$('garminJson').value='';render();alert(ok+' Garmin-Datensätze importiert.')});
+try{if('serviceWorker' in navigator)navigator.serviceWorker.getRegistrations().then(function(rs){rs.forEach(function(r){r.unregister()})});if(window.caches)caches.keys().then(function(ks){ks.forEach(function(k){caches.delete(k)})})}catch(e){}
 render();
 })();
 </script>
